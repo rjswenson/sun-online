@@ -1,5 +1,7 @@
 # Sun Online
 
+[![Integration Tests](https://github.com/rjswenson/sun-online/actions/workflows/test.yml/badge.svg)](https://github.com/rjswenson/sun-online/actions/workflows/test.yml)
+
 AI-powered content server using open source archives to deliver educational content with clear transcriptions.
 
 ## Overview
@@ -22,6 +24,8 @@ Sun Online is an intelligent content delivery platform that leverages artificial
 - **Backend**: Elixir (concurrent, fault-tolerant server)
 - **AI/ML**: Python (machine learning, computer vision)
 - **API Framework**: FastAPI (high-performance Python API)
+- **Testing**: ExUnit (Elixir), Pytest (Python)
+- **CI/CD**: GitHub Actions
 - **Focus**: Educational content, transcription, accessibility
 
 ## Project Status
@@ -136,13 +140,66 @@ Visit:
 
 ### Testing
 
-```bash
-# Elixir tests
-mix test
+Sun Online has comprehensive test coverage for both Elixir and Python services.
 
-# Python tests
-cd python && pytest
+#### Quick Start
+
+```bash
+# Run all unit tests (Elixir + Python)
+make test
+
+# Run individual test suites
+make test-unit          # Elixir unit tests only
+make test-python        # Python tests
+make test-python-cov    # Python tests with coverage
+make test-integration   # Integration tests (requires running services)
 ```
+
+#### Test Types
+
+**Unit Tests** - Test individual components without external dependencies:
+```bash
+# Elixir unit tests
+mix test --exclude integration
+
+# Python unit tests
+cd python && pytest -v
+```
+
+**Integration Tests** - Test multi-service communication (requires both services running):
+```bash
+# Terminal 1: Start Elixir service
+mix run --no-halt
+
+# Terminal 2: Start Python service
+cd python && uvicorn app.main:app --reload
+
+# Terminal 3: Run integration tests
+mix test --only integration
+```
+
+#### Test Coverage
+
+- **Elixir**: 1 unit test, 8 integration tests
+  - Application startup and supervision
+  - Health check endpoints
+  - Service communication
+  - API endpoint accessibility
+
+- **Python**: 7 unit tests
+  - FastAPI endpoint responses
+  - Health checks
+  - OpenAPI documentation
+  - Transcription and processing endpoints
+
+See [test/README.md](test/README.md) for detailed testing documentation.
+
+#### CI/CD
+
+Tests run automatically on GitHub Actions for every push and pull request:
+- Unit tests (Elixir and Python)
+- Integration tests with multi-service orchestration
+- Python code coverage reporting
 
 ### Production Deployment
 
