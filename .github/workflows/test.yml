@@ -27,34 +27,31 @@ jobs:
         with:
           python-version: '3.12'
           cache: 'pip'
-          cache-dependency-path: sun-online/python/requirements.txt
+          cache-dependency-path: python/requirements.txt
 
       # Install Dependencies
       - name: Install Elixir dependencies
         run: mix deps.get
-        working-directory: ./sun-online
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
-        working-directory: ./sun-online/python
+        working-directory: python
 
       # Run Unit Tests
       - name: Run Elixir unit tests
         run: mix test --exclude integration
-        working-directory: ./sun-online
 
       - name: Run Python tests
         run: pytest -v --cov=app --cov-report=term --cov-report=xml
-        working-directory: ./sun-online/python
+        working-directory: python
 
       # Start services for integration tests
       - name: Start Elixir service in background
         run: mix run --no-halt &
-        working-directory: ./sun-online
 
       - name: Start Python service in background
         run: uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-        working-directory: ./sun-online/python
+        working-directory: python
 
       # Wait for services to be ready
       - name: Wait for services to start
@@ -66,14 +63,13 @@ jobs:
       # Run Integration Tests
       - name: Run Elixir integration tests
         run: mix test --only integration
-        working-directory: ./sun-online
 
       # Upload Test Results
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          file: ./sun-online/python/coverage.xml
+          file: python/coverage.xml
           flags: python
           name: python-coverage
 
@@ -83,6 +79,6 @@ jobs:
         with:
           name: test-logs
           path: |
-            sun-online/_build/test/
-            sun-online/python/.pytest_cache/
+            _build/test/
+            python/.pytest_cache/
           retention-days: 7
